@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".HatterActivity">
+
+    <Button
+        android:id="@+id/buttonColor"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+        android:text="@string/color_button_label"
+        app:layout_constraintEnd_toEndOf="@+id/buttonPicture"
+        app:layout_constraintStart_toStartOf="@+id/buttonPicture"
+        app:layout_constraintTop_toBottomOf="@+id/buttonPicture" />
+
+    <Button
+        android:id="@+id/buttonPicture"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:onClick="onPicture"
+        android:text="@string/button_picture_label"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.25" />
+
+    <CheckBox
+        android:id="@+id/checkFeather"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/check_feather_label"
+        app:layout_constraintEnd_toEndOf="@+id/spinnerHat"
+        app:layout_constraintStart_toStartOf="@+id/spinnerHat"
+        app:layout_constraintTop_toBottomOf="@+id/spinnerHat" />
+
+    <Spinner
+        android:id="@+id/spinnerHat"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        android:entries="@array/hats_spinner"
+        app:layout_constraintEnd_toEndOf="@+id/buttonColor"
+        app:layout_constraintStart_toStartOf="@+id/buttonColor"
+        app:layout_constraintTop_toBottomOf="@+id/buttonColor" />
+
+    <edu.sdsmt.mad_hatter_johnson_noah.HatterView
+        android:id="@+id/hatterView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/black"
+        android:contentDescription="@string/hat_type_selection"
+        android:onClick="onPicture"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/checkFeather"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">T4 Johnson N A</string>
+    <string name="color_button_label">Color</string>
+    <string name="button_picture_label">Picture</string>
+    <string name="check_feather_label">Feather</string>
+    <string name="hat_type_selection">Hat type selection</string>
+    <string name="no_load">Could not load image</string>
+    <string-array name="hats_spinner">
+        <item>Stetson Black Rancher</item>
+        <item>Stetson Gray 20X</item>
+        <item>Custom</item>
+    </string-array>
+</resources>
