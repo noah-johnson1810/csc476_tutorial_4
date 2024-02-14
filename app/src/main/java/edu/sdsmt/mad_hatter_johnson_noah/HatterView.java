@@ -1,5 +1,6 @@
 package edu.sdsmt.mad_hatter_johnson_noah;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,7 +12,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
@@ -61,6 +61,8 @@ public class HatterView extends View {
      * don't color the hat band
      */
     private Bitmap hatbandBitmap = null;
+
+    private Bitmap featherBitmap = null;
 
     /**
      * Image drawing scale
@@ -125,15 +127,6 @@ public class HatterView extends View {
     }
 
     /**
-     * Get the installed image path
-     *
-     * @return path or null if none
-     */
-    public String getImageUri() {
-        return params.imageUri;
-    }// Get coordinates
-
-    /**
      * Set an image path
      *
      * @param imageUri path to image file
@@ -141,25 +134,18 @@ public class HatterView extends View {
     public void setImageUri(String imageUri) {
         params.imageUri = imageUri;
 
-        InputStream input = null;
+        InputStream input;
         try {
             input = getContext().getContentResolver().openInputStream(Uri.parse(imageUri));
             imageBitmap = BitmapFactory.decodeStream(input);
-            input.close();
+            if (input != null) {
+                input.close();
+            }
             invalidate();
         } catch (IOException e) {
             Toast.makeText(getContext(), getContext().getString(R.string.no_load), Toast.LENGTH_SHORT).show();
         }
 
-    }
-
-    /**
-     * Get the current custom hat color
-     *
-     * @return hat color integer value
-     */
-    public int getColor() {
-        return params.color;
     }
 
     /**
@@ -172,6 +158,18 @@ public class HatterView extends View {
 
         // Create a new filter to tint the bitmap
         customPaint.setColorFilter(new LightingColorFilter(color, 0));
+        invalidate();
+    }
+
+    /**
+     * Set whether to show the feather
+     *
+     * @param b whether to show the feather
+     */
+
+    public void setShowFeather(boolean b) {
+        featherBitmap = b ? BitmapFactory.decodeResource(getResources(), R.drawable.feather) : null;
+        params.drawTheFeather = b;
         invalidate();
     }
 
@@ -190,7 +188,7 @@ public class HatterView extends View {
         init(attrs, defStyle);
     }
 
-    private void init(AttributeSet attrs, int defStyle) {
+    private void init(AttributeSet ignoredAttrs, int ignoredDefStyle) {
         setHat(HAT_BLACK);
         customPaint = new Paint();
         customPaint.setColorFilter(new LightingColorFilter(params.color, 0));
@@ -255,6 +253,15 @@ public class HatterView extends View {
             canvas.drawBitmap(hatBitmap, 0, 0, null);
         }
 
+        if(params.drawTheFeather) {
+            // Android scaled images that it loads. The placement of the
+            // feather is at 322, 22 on the original image when it was
+            // 500 pixels wide. It will have to move based on how big
+            // the hat image actually is.
+            float factor = hatBitmap.getWidth() / 500.0f;
+            canvas.drawBitmap(featherBitmap, 322 * factor, 22 * factor, null);
+        }
+
         if (hatbandBitmap != null) {
             canvas.drawBitmap(hatbandBitmap, 0, 0, null);
         }
@@ -267,6 +274,7 @@ public class HatterView extends View {
      *
      * @param event The touch event
      */
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         int id = event.getPointerId(event.getActionIndex());
@@ -376,6 +384,7 @@ public class HatterView extends View {
             float angle2 = angle(touch1.x, touch1.y, touch2.x, touch2.y);
             float da = angle2 - angle1;
             rotate(da, touch1.x, touch1.y);
+            scale();
         }
     }
 
@@ -415,6 +424,33 @@ public class HatterView extends View {
         return (float) Math.toDegrees(Math.atan2(dy, dx));
     }
 
+    private void scale() {
+        // Calculate the distance between the two touch points
+        float dist1 = distance(touch1.lastX, touch1.lastY, touch2.lastX, touch2.lastY);
+        float dist2 = distance(touch1.x, touch1.y, touch2.x, touch2.y);
+
+        // Calculate the ratio of the distances
+        float ratio = dist2 / dist1;
+
+        // Scale the image
+        params.hatScale *= (ratio * ratio);
+    }
+
+    /**
+     * Calculate the distance between two points
+     *
+     * @param x1 first point x
+     * @param y1 first point y
+     * @param x2 second point x
+     * @param y2 second point y
+     * @return distance between the points
+     */
+    private float distance(float x1, float y1, float x2, float y2) {
+        float dx = x2 - x1;
+        float dy = y2 - y1;
+        return (float) Math.sqrt(dx * dx + dy * dy);
+    }
+
     /**
      * Save the view state to a bundle
      *
@@ -440,11 +476,17 @@ public class HatterView extends View {
         }
 
         // Ensure the options are all set
-        setColor(params.color);
-        if (!params.imageUri.isEmpty()) {
+        if (params != null) {
+            setColor(params.color);
+        }
+        if (params != null && !params.imageUri.isEmpty()) {
             setImageUri(params.imageUri);
         }
-        setHat(params.hat);
+        setHat(params != null ? params.hat : 0);
+    }
+
+    public boolean getShowFeather() {
+        return this.params.drawTheFeather;
     }
 
     private static class Parameters implements Serializable {
@@ -482,6 +524,11 @@ public class HatterView extends View {
          * Custom hat color
          */
         public int color = Color.CYAN;
+
+        /**
+         * Whether to draw the feather
+         */
+        public boolean drawTheFeather = false;
     }
 
     /**
@@ -542,6 +589,3 @@ public class HatterView extends View {
         }
     }
 }
-
-
-

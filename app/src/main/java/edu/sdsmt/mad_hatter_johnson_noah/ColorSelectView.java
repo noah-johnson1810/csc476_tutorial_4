@@ -1,10 +1,10 @@
 package edu.sdsmt.mad_hatter_johnson_noah;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -86,6 +86,7 @@ public class ColorSelectView extends View {
     /* (non-Javadoc)
      * @see android.view.View#onTouchEvent(android.view.MotionEvent)
      */
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 

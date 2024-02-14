@@ -1,18 +1,32 @@
 package edu.sdsmt.mad_hatter_johnson_noah;
 
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
+/*
+ * ___X___	45 	Tutorial completed (points based on percent completed)
+ *
+ * ___X___	15 	Landscape using Constraint\RelativeLayout correct for Pixel C, Pixel 3a XL, and 5.1" FWVGA (-3pt for each minor error)
+ *
+ * ___X___	10 	Scaling works (-5pt for semi working)
+ *
+ * __n/a__	10 	CSC 576 ONLY: Scaling keeps the same image point under the touch point (-5pt for semi working)
+ *
+ * ___X___	5 	Feather appears and disappears as required
+ *
+ * ___X___	5 	Color picker opens Color Activity and closes on color tap
+ *
+ * ___X___	5 	Color picker returns a color
+ *
+ * ___X___	5 	Spinner is correct in all cases
+ *
+ * ___X___	5 	Feather checkmark is correct in all cases
+ *
+ * ___X___	5 	Color button disables when not valid
+ */
 
+
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,9 +37,15 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Spinner;
-import android.Manifest;
 
-import java.util.Objects;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 public class HatterActivity extends AppCompatActivity {
 
@@ -66,7 +86,6 @@ public class HatterActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-
         hatterView.putToBundle(PARAMETERS, outState);
     }
 
@@ -123,6 +142,7 @@ public class HatterActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> arg0, View view,
                                        int pos, long id) {
                 hatterView.setHat(pos);
+                colorButton.setEnabled(pos == 2);
             }
 
             @Override
@@ -138,6 +158,10 @@ public class HatterActivity extends AppCompatActivity {
             hatterView.getFromBundle(PARAMETERS, savedInstanceState);
             spinner.setSelection(hatterView.getHat());
         }
+
+        featherCheck.setOnCheckedChangeListener((buttonView, isChecked) -> hatterView.setShowFeather(isChecked));
+
+        updateUI();
     }
 
     /**
@@ -163,6 +187,14 @@ public class HatterActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Ensure the user interface components match the current state
+     */
+    private void updateUI() {
+        spinner.setSelection(hatterView.getHat());
+        featherCheck.setActivated(hatterView.getShowFeather());
+    }
+
     public void onColor(View view) {
         int result = 0;
         colorResultLauncher.launch(result);
@@ -184,7 +216,6 @@ public class HatterActivity extends AppCompatActivity {
         @Override
         public void onActivityResult(Integer color) {
             if (color != null) {
-                Log.i("Emily", color.toString());
                 hatterView.setColor(color);
             }
         }
